@@ -1,0 +1,5 @@
+
+.PHONY: deploy
+
+deploy:
+	./deploy
