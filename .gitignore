@@ -1,2 +1,5 @@
 *~
+*.swp
 deploy
+tmp
+warpengineer.space.*.tar.gz
