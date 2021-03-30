@@ -1,0 +1,54 @@
+# My Notes on Makefiles
+### Stuff I use most
+
+## Output Functions
+
+* $(info ...)    - Print out some info message
+* $(warning ...) - Print out a warning
+* $(error ...)   - Print out an error and STOP
+
+## Defines
+
+* D  = something - Set D equal to 'something' every time D is used (expand every time)
+* D := something - Set D equal to 'something' once (expand only once. non-recursive)
+* D ?= something - Set D equal to 'something' only if not already set
+
+## Functions
+
+* $(shell <command>) - Run 'command' in a shell and return output
+* $(call var,arg,arg,...) - Call a function, var, with args.
+```
+call example:
+reverse = $(2) $(1)
+D = $(call reverse,a,b) # D will contain 'b a'
+```
+* $(filter pat,text) - Filter 'text' by 'pat'
+```
+filter example:
+D = a.h a.c b.h b.c
+CFiles = $(filter %.c,$(D))  # CFiles will contain 'a.c b.c' only
+```
+* $(if <cond>,<then>,<else>) - If 'cond' is non-empty string, do 'then'...
+* $(or arg,arg,...) - Return first non-empty arg or empty string
+* $(and arg,arg,...) - Return empty string or last non-empty arg
+
+### List Functions
+
+* $(sort <list>) - Sort list
+* $(firstword list) - Return first item in space-separated list
+* $(lastword list) - Return last item in space-separated list
+* $(word nth,list) - Return 1-based nth word in list
+* $(words list) - Return the number of words in space-separated list
+* $(wordlist start,end,list) - Return words from start to end in list
+
+### Directory/Path/File Functions
+
+* $(abspath ...) - Get absolute path of a file and don't check for existence
+* $(realpath ...) - Get real path of a file and return empty string if it doesn't exist
+* $(wildcard <pattern>) - Get list of files matching 'pattern'
+
+### Create/Append to File
+
+* $(file >$(log),stuff) - Write 'stuff' to log file
+
+=> https://www.gnu.org/software/make/manual/html_node/Functions.html More stuff online
