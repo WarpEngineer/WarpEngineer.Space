@@ -17,13 +17,13 @@
 
 * $(shell <command>) - Run 'command' in a shell and return output
 * $(call var,arg,arg,...) - Call a function, var, with args.
-```
+``` call example
 call example:
 reverse = $(2) $(1)
 D = $(call reverse,a,b) # D will contain 'b a'
 ```
 * $(filter pat,text) - Filter 'text' by 'pat'
-```
+``` filter example
 filter example:
 D = a.h a.c b.h b.c
 CFiles = $(filter %.c,$(D))  # CFiles will contain 'a.c b.c' only

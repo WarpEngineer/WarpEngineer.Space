@@ -5,7 +5,7 @@ I was looking through my .bashrc and came across this.  I've been using it so lo
 ## Add some color to your man pages.
 
 
-```
+``` man color function
 man() {
     LESS_TERMCAP_md=$'\e[01;31m' \
     LESS_TERMCAP_me=$'\e[0m' \
