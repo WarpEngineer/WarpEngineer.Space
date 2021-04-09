@@ -1,0 +1,11 @@
+# Push an Existing Project into GitHub
+
+I always forget these steps so noting them here. This does assume that an empty repo is first created on GitHub.
+
+* git init  # initialize directory to be a new git repo
+* git add . # add files
+* git commit -m "Initial Commit" # commit the files
+* git remote add origin <project url> # add the GitHub repo as the remote
+* git remote -v # verify addition
+* git push origin master # push commit to master branch on GitHub
+
