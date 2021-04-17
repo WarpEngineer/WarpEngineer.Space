@@ -51,4 +51,4 @@ CFiles = $(filter %.c,$(D))  # CFiles will contain 'a.c b.c' only
 
 * $(file >$(log),stuff) - Write 'stuff' to log file
 
-=> https://www.gnu.org/software/make/manual/html_node/Functions.html More stuff online
+=> https://www.gnu.org/software/make/manual/html_node/Functions.html More stuff
