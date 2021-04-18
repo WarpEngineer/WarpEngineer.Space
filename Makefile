@@ -27,7 +27,15 @@ clean:
 	rm -f ${HTML_TAR}
 
 html:
-	./convert_to_html # using https://github.com/huntingb/gemtext-html-converter
+	# using https://github.com/huntingb/gemtext-html-converter
+	mkdir -p converted; \
+	rm -f converted/*.html; \
+	for f in public_gemini/entries/*.gemini; \
+	do \
+		File=$$(basename $$f); \
+		File2=converted/$${File%%gemini}html; \
+		python3 convert_gemtext_file.py $$f $$File2; \
+	done
 
 deploy:
 	./deploy

@@ -4,7 +4,4 @@ deploy
 tmp
 warpengineer.space.*.tar.gz
 convert_gemtext_file.py
-convert_to_html
 converted
-html.top
-html.bottom
