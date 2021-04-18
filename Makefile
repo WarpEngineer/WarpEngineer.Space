@@ -1,7 +1,6 @@
 
 GEMINI_FILES := \
-	$(wildcard public_gemini/*.gemini) \
-	$(wildcard public_gemini/restricted/*.gemini)
+	$(wildcard public_gemini/*.gemini) 
 
 HTML_FILES := \
 	$(wildcard public_html/*.html) \
@@ -26,6 +25,9 @@ ${HTML_TAR}: ${HTML_FILES}
 clean:
 	rm -f ${GEMINI_TAR}
 	rm -f ${HTML_TAR}
+
+html:
+	./convert_to_html # using https://github.com/huntingb/gemtext-html-converter
 
 deploy:
 	./deploy
