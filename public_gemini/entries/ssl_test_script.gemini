@@ -1,0 +1,128 @@
+# SSL Test Script
+
+This is a very useful script by jaydansand that I found on gist.github. Keeping it handy here.
+
+=> https://gist.github.com/jaydansand/17d0142c9b0967315cd4 See the original gist
+
+``` SSL Test Script
+1    #!/bin/bash
+2    # Author: Jay Dansand, Technology Services, Lawrence University
+3    # Date: 10/17/2014
+4    
+5    # OpenSSL requires a port specification; default to 443.
+6    SERVER="$1:443"
+7    SERVER_HOST=$(echo "$SERVER" | cut -d ":" -f 1)
+8    SERVER_PORT=$(echo "$SERVER" | cut -d ":" -f 2)
+9    if [[ -z "$SERVER_HOST" || -z "$SERVER_PORT" ]]; then
+10     echo "Usage: $0 host[:port] [ciphers [delay in ms]]"
+11     echo ""
+12     echo "  port - Remote host port"
+13     echo "    Default: 443"
+14     echo "  ciphers - Expression suitable for the command \"openssl ciphers [ciphers]\""
+15     echo "    Default: ALL:eNULL:aNULL"
+16     echo "  delay - Time between probe requests in ms"
+17     echo "    Default: 125"
+18     echo ""
+19     echo "  Example: $0 localhost:8443"
+20     echo "    Test localhost on port 8443 with all ciphers and default delay (125ms)"
+21     echo ""
+22     echo "  Example: $0 example.com \"ALL:!aNULL\" 1000"
+23     echo "    Test example.com on default port (443) with all ciphers except aNULL and delay of 1000ms"
+24     exit
+25   fi
+26   SERVER="$SERVER_HOST:$SERVER_PORT"
+27   
+28   DELAY_MS="$3"
+29   echo "$DELAY_MS"
+30   if [[ "$DELAY_MS" -le 0 ]]; then
+31     DELAY_MS=125
+32   fi
+33   DELAY_S=$(printf $(expr "$DELAY_MS" / 1000).%03d $(expr "$DELAY_MS" % 1000) )
+34   
+35   CIPHER_SUITES="$2"
+36   if [[ -z "$CIPHER_SUITES" ]]; then
+37     CIPHER_SUITES='ALL:eNULL:aNULL'
+38   fi
+39   CIPHERS=$(openssl ciphers -v "${CIPHER_SUITES}" 2>&1)
+40   if [[ "$?" -ne 0 ]]; then
+41     ERROR=$(echo -n "$CIPHERS" | cut -s -d':' -f6)
+42     echo "ERROR in cipher list: \"$ERROR\""
+43     exit
+44   fi
+45   CIPHERS=$(echo "$CIPHERS" | sed -r 's/[\t ]+/|/g')
+46   
+47   echo "Testing $SERVER_HOST on port $SERVER_PORT with a delay of ${DELAY_MS}ms"
+48   echo "Using $(openssl version)"
+49   
+50   # Store the output to reuse for some other testing
+51   SCLIENT_DUMP=$(echo "" | openssl s_client -connect $SERVER 2>&1)
+52   
+53   echo ""
+54   echo "Certificate Information"
+55   echo "--------------------"
+56   echo "$SCLIENT_DUMP" | openssl x509 -noout -text
+57   
+58   
+59   echo ""
+60   echo "Protocol Support"
+61   echo "--------------------"
+62   SUPPORTED_PROTOCOLS=$(openssl s_client --help 2>&1 | grep -P ' -? [jJ]ust use (?!DTLS)' | sort -di -b -k1,1 | sed 's/ *-\? [jJ]ust use */|/g')
+63   for PROTOCOL in ${SUPPORTED_PROTOCOLS}; do
+64     SCLIENT_ARG=$(echo "$PROTOCOL" | cut -d "|" -f 1)
+65     PROT_DESC=$(echo "$PROTOCOL" | cut -d "|" -f 2)
+66     echo -n "$PROT_DESC	: "
+67     echo -n | openssl s_client "$SCLIENT_ARG" -connect $SERVER > /dev/null 2>&1
+68     if [[ $? == 0 ]] ; then echo "YES"; else echo "NO"; fi
+69     sleep $DELAY_S
+70   done
+71   
+72   echo ""
+73   echo "General Support"
+74   echo "--------------------"
+75   echo -n "Secure Renegotiation:			"
+76   echo "$SCLIENT_DUMP" | grep "Secure Renegotiation IS supported" > /dev/null 2>&1
+77   if [[ "$?" == 0 ]] ; then echo "YES"; else echo "NO"; fi
+78   echo -n "Client-Initiated Renegotiation:		"
+79   echo "HEAD / HTTP/1.1
+80   R" | openssl s_client -crlf -connect $SERVER > /dev/null 2>&1
+81   if [[ "$?" == 0 ]] ; then echo "YES"; else echo "NO"; fi
+82   echo -n "TLS Compression (CRIME attack vuln):	"
+83   echo "$SCLIENT_DUMP" | grep "Compression: NONE" > /dev/null 2>&1
+84   if [[ "$?" == 0 ]] ; then echo "NO"; else echo "YES"; fi
+85   #echo -n "HTTP Compression (BREACH attack vuln):	"
+86   #echo "GET / HTTP/1.1
+87   #Host: $SERVER_HOST
+88   #Accept-Encoding: gzip,deflate,compress,br,bzip2,lzma,sdch,xpress,xz
+89   #" | openssl s_client -ign_eof -crlf -connect $SERVER 2>&1 | grep -Pi "^Content-Encoding:[^\r\n]*(gzip|deflate|compress|br|bzip2|lzma|sdch|xpress|xz)" > /dev/null 2>&1
+90   #if [[ "$?" == 0 ]] ; then echo "YES"; else echo "NO"; fi
+91   echo -n "TLS_FALLBACK_SCV (anti-POODLE):		"
+92   echo "" | openssl s_client -connect $SERVER -fallback_scsv -no_tls1_2 > /dev/null 2>&1
+93   if [[ "$?" != 0 ]] ; then echo "YES"; else echo "NO"; fi
+94  
+95   echo ""
+96   echo "Cipher Support"
+97   CIPHER_COUNT=$(echo "${CIPHERS}" | wc -l 2>/dev/null)
+98   echo "Testing ${CIPHER_COUNT} OpenSSL cipher suites matching \"$CIPHER_SUITES\""
+99   echo "  (execute \"openssl ciphers '$CIPHER_SUITES'\" to see the list.)"
+100  echo "--------------------"
+101  HEADER="Cipher Tag|Cipher Prot.|Key Ex.|Auth.|Encryption|MAC
+102  $CIPHERS"
+103  echo "$HEADER" | column -t -s "|" | head -1
+104  IFS=$'\n'
+105  for CIPHER_DETAILS in ${CIPHERS[@]}; do
+106    CIPHER=$(echo "$CIPHER_DETAILS" | cut -d "|" -f 1)
+107    RESULT=$(echo -n | openssl s_client -cipher "$CIPHER" -connect $SERVER 2>&1)
+108    if [[ "$RESULT" =~ "Cipher is ${CIPHER}" || ("$RESULT" =~ "Cipher    :" && ! ("$RESULT" =~ "Cipher    : 0000")) ]] ; then
+109      PROT_DESC=$(echo "$RESULT" | grep -oP '(?<=Protocol  : )[^\b]+')
+110      echo "$HEADER
+111  $CIPHER_DETAILS" | column -t -s "|" | tail -1
+112    fi
+113    sleep $DELAY_S
+114  done
+
+```
+Change line 107 to the following for a TLSv1.3 hack.
+
+```Change for TLS1.3
+RESULT=$(echo -n | (openssl s_client -cipher "$CIPHER" -connect $SERVER 2>&1 || openssl s_client -ciphersuites "$CIPHER" -connect $SERVER 2>&1))
+```
