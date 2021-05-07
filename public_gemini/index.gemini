@@ -6,6 +6,8 @@ I'm a software engineer and I dabble with everything I can think of, from design
 
 # Orbit
 
+## Notes
+
 => entries/make_notes.gemini My Notes on Makefiles
 => entries/colorise_man.gemini Add Some Color to Man Pages
 => entries/vim_no_plugins.gemini Useful Vim Settings Without Plugins
@@ -13,6 +15,10 @@ I'm a software engineer and I dabble with everything I can think of, from design
 => entries/sync_git_with_upstream.gemini Sync a git Repo with Upstream
 => entries/ssl_test_script.gemini SSL Test Script
 ### Working on more content...
+
+## Sports
+
+=> sports/nhl/index.gemini WarpEngineer's NHL Scores
 
 # Solar System
 
