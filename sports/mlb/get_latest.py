@@ -79,7 +79,7 @@ def main():
 					print "### %s: %s" % ( home_team, home_scrore )
 				elif current_state.lower() == 'd': # delayed, postponed
 					print '## Postponed: %s' % game['status']['reason']
-				else:
+				elif current_state.lower() in ['s','p']: # scheduled, preview
 					start_time = game['gameDate']
 					try:
 						t = datetime.strptime(start_time,"%Y-%m-%dT%H:%M:%SZ")
@@ -91,7 +91,7 @@ def main():
 					print "## Starts at %s" % start_time
 				print
 		print
-		print "version 0.2"
+		print "version 0.3"
 
 	except:
 		return error(data_coded)
