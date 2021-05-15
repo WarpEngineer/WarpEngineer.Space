@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# vim: set fileencoding=utf-8 :
+###vim: set encoding=utf-8 :
 
 import os
 # set time zone to eastern
@@ -28,8 +28,9 @@ def error(msg=None, sport=""):
 def format_nhl_game(game):
 	away_team = game['teams']['away']['team']['abbreviation']
 	home_team = game['teams']['home']['team']['abbreviation']
+	game_type = '' if game['gameType'].lower() == 'r' else '(post-season)'
 	print
-	print "# %s at %s" % ( away_team, home_team )
+	print "# %s at %s %s" % ( away_team, home_team, game_type )
 	current_state  = game['status']['codedGameState']
 	if current_state.lower() in ["3","4"]: # in progess
 		current_period = game['linescore']['currentPeriod']
@@ -71,12 +72,10 @@ def format_nhl_game(game):
 def format_mlb_game(game):
 	away_team = game['teams']['away']['team']['abbreviation']
 	home_team = game['teams']['home']['team']['abbreviation']
-	doubleHeader = game['doubleHeader'].lower()
-	game_number = ""
-	if doubleHeader == "y":
-		game_number = "game #" + str(game['gameNumber'])
+	game_type = "" if game['gameType'].lower() == 'r' else '(post-season)'
+	game_number = "" if game['doubleHeader'].lower() == "n" else "game #" + str(game['gameNumber'])
 	print
-	print "# %s at %s %s" % ( away_team, home_team, game_number )
+	print "# %s at %s %s %s" % ( away_team, home_team, game_number, game_type )
 	current_state = game['status']['codedGameState']
 	if current_state.lower() == "i": # in progress
 		current_inning = game['linescore']['currentInning']
@@ -88,9 +87,10 @@ def format_mlb_game(game):
 		print "### %s: %s" % ( home_team, home_scrore )
 	elif current_state.lower() in ["f","o"]: # final, over
 		current_inning = game['linescore']['currentInning']
+		scheduled_innings = game['linescore']['scheduledInnings']
 		away_scrore = game['teams']['away']['score']
 		home_scrore = game['teams']['home']['score']
-		if int(current_inning) > 9:
+		if int(current_inning) > int(scheduled_innings):
 			print "## Final Score/%s" % current_inning
 		else:
 			print "## Final Score"
@@ -110,6 +110,7 @@ def format_mlb_game(game):
 		print "## Starts at %s" % start_time
 
 def main():
+	# pointers: White Left Pointing Backhand Index Emoji, White Right Pointing Backhand Index Emoji
 	# argv1: nhl|mlb
 	# argv2: today|yesterday|tomorrow
 	sport = sys.argv[1]
@@ -175,7 +176,7 @@ def main():
 					format_mlb_game(game)
 				print
 		print
-		print "version 0.3"
+		print "version 0.4"
 
 	except:
 		return error(data_coded, sport)
