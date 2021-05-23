@@ -12,6 +12,8 @@ import time
 from datetime import datetime, timedelta
 from tz import UTC, LocalTimezone
 
+VERSION = "version 0.6"
+
 # Date format = YYYY-MM-DD
 URL_NHL = "https://statsapi.web.nhl.com/api/v1/schedule?startDate=%s&endDate=%s&hydrate=team(leaders(categories=[points,goals,assists],gameTypes=[R])),linescore,broadcasts(all),tickets,game(content(media(epg),highlights(scoreboard)),seriesSummary),radioBroadcasts,metadata,decisions,scoringplays,seriesSummary(series)&site=en_nhl&teamId=&gameType=&timecode="
 URL_MLB = "https://bdfed.stitch.mlbinfra.com/bdfed/transform-mlb-scoreboard?stitch_env=prod&sortTemplate=4&sportId=1&startDate=%s&endDate=%s&gameType=E,S,R,F,D,L,W,A&=,,,,,,,&language=en&leagueId=103,104"
@@ -29,14 +31,18 @@ def format_nhl_game(game):
 	away_team = game['teams']['away']['team']['abbreviation']
 	home_team = game['teams']['home']['team']['abbreviation']
 	game_type = '' if game['gameType'].lower() == 'r' else '(post-season)'
+	game_number = ''
+	if game_type != '':
+		game_number = game['seriesSummary']['gameLabel']
+		series_status = game['seriesSummary']['seriesStatusShort']
 	print
-	print "# %s at %s %s" % ( away_team, home_team, game_type )
+	print "# %s at %s %s %s" % ( away_team, home_team, game_number, game_type )
+	if game_type != '':
+		print "### Series: %s" % ( series_status )
 	current_state  = game['status']['codedGameState']
 	if current_state.lower() in ["3","4"]: # in progess
-		current_period = game['linescore']['currentPeriod']
+		current_period = game['linescore']['currentPeriodOrdinal']
 		current_period_ord = game['linescore']['currentPeriodOrdinal']
-		if int(current_period) > 3:
-			current_period = 'OT'
 		current_remain = game['linescore']['currentPeriodTimeRemaining']
 		away_scrore = game['teams']['away']['score']
 		home_scrore = game['teams']['home']['score']
@@ -52,7 +58,7 @@ def format_nhl_game(game):
 		current_period = game['linescore']['currentPeriod']
 		overtime = ""
 		if int(current_period) > 3:
-			overtime = "Overtime"
+			overtime = game['linescore']['currentPeriodOrdinal']
 		if game['linescore']['hasShootout']:
 			overtime = "OT/SO"
 		print "### %s: %s" % ( away_team, away_scrore )
@@ -176,7 +182,7 @@ def main():
 					format_mlb_game(game)
 				print
 		print
-		print "version 0.4"
+		print VERSION
 
 	except:
 		return error(data_coded, sport)
