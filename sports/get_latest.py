@@ -151,7 +151,10 @@ def main():
 	data_coded = f.read()
 	data_decoded = json.loads(data_coded)
 	try:
-		game_date = data_decoded['dates'][0]['date']
+                if len(data_decoded['dates']):
+                    game_date = data_decoded['dates'][0]['date']
+                else:
+                    game_date = 'this day'
 	except:
 		return error(data_coded, sport)
 	try:
@@ -169,7 +172,10 @@ def main():
 	print "### Last update: %s" % time.asctime()
 
 	try:
-		games = data_decoded['dates'][0]['games']
+                if len(data_decoded['dates']):
+                    games = data_decoded['dates'][0]['games']
+                else:
+                    games = []
 	except:
 		return error(data_coded, sport)
 
