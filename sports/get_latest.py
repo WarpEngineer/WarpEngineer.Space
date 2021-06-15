@@ -12,7 +12,7 @@ import time
 from datetime import datetime, timedelta
 from tz import UTC, LocalTimezone
 
-VERSION = "version 0.6"
+VERSION = "version 0.7"
 
 # Date format = YYYY-MM-DD
 URL_NHL = "https://statsapi.web.nhl.com/api/v1/schedule?startDate=%s&endDate=%s&hydrate=team(leaders(categories=[points,goals,assists],gameTypes=[R])),linescore,broadcasts(all),tickets,game(content(media(epg),highlights(scoreboard)),seriesSummary),radioBroadcasts,metadata,decisions,scoringplays,seriesSummary(series)&site=en_nhl&teamId=&gameType=&timecode="
