@@ -12,7 +12,7 @@ import time
 from datetime import datetime, timedelta
 from tz import UTC, LocalTimezone
 
-VERSION = "version 0.7"
+VERSION = "version 0.8"
 
 # Date format = YYYY-MM-DD
 URL_NHL = "https://statsapi.web.nhl.com/api/v1/schedule?startDate=%s&endDate=%s&hydrate=team(leaders(categories=[points,goals,assists],gameTypes=[R])),linescore,broadcasts(all),tickets,game(content(media(epg),highlights(scoreboard)),seriesSummary),radioBroadcasts,metadata,decisions,scoringplays,seriesSummary(series)&site=en_nhl&teamId=&gameType=&timecode="
@@ -104,6 +104,8 @@ def format_mlb_game(game):
 		print "### %s: %s" % ( home_team, home_scrore )
 	elif current_state.lower() == 'd': # delayed, postponed
 		print '## Postponed: %s' % game['status']['reason']
+	elif current_state.lower() == 'u': # suspended
+		print '## %s' % game['status']['reason']
 	elif current_state.lower() in ['s','p']: # scheduled, preview
 		start_time = game['gameDate']
 		try:
