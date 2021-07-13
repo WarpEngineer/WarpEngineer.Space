@@ -12,7 +12,7 @@ import time
 from datetime import datetime, timedelta
 from tz import UTC, LocalTimezone
 
-VERSION = "version 0.8"
+VERSION = "version 0.8.1"
 
 # Date format = YYYY-MM-DD
 URL_NHL = "https://statsapi.web.nhl.com/api/v1/schedule?startDate=%s&endDate=%s&hydrate=team(leaders(categories=[points,goals,assists],gameTypes=[R])),linescore,broadcasts(all),tickets,game(content(media(epg),highlights(scoreboard)),seriesSummary),radioBroadcasts,metadata,decisions,scoringplays,seriesSummary(series)&site=en_nhl&teamId=&gameType=&timecode="
@@ -78,7 +78,13 @@ def format_nhl_game(game):
 def format_mlb_game(game):
 	away_team = game['teams']['away']['team']['abbreviation']
 	home_team = game['teams']['home']['team']['abbreviation']
-	game_type = "" if game['gameType'].lower() == 'r' else '(post-season)'
+	game_type = game['gameType'].lower()
+	if game_type == 'r':
+		game_type = ""
+	elif game_type == 'a':
+		game_type = '(all-star)'
+	else:
+		game_type = '(post-season)'
 	game_number = "" if game['doubleHeader'].lower() == "n" else "game #" + str(game['gameNumber'])
 	print
 	print "# %s at %s %s %s" % ( away_team, home_team, game_number, game_type )
