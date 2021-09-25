@@ -12,7 +12,7 @@ import time
 from datetime import datetime, timedelta
 from tz import UTC, LocalTimezone
 
-VERSION = "version 0.8.1"
+VERSION = "version 0.8.2"
 
 # Date format = YYYY-MM-DD
 URL_NHL = "https://statsapi.web.nhl.com/api/v1/schedule?startDate=%s&endDate=%s&hydrate=team(leaders(categories=[points,goals,assists],gameTypes=[R])),linescore,broadcasts(all),tickets,game(content(media(epg),highlights(scoreboard)),seriesSummary),radioBroadcasts,metadata,decisions,scoringplays,seriesSummary(series)&site=en_nhl&teamId=&gameType=&timecode="
@@ -30,14 +30,18 @@ def error(msg=None, sport=""):
 def format_nhl_game(game):
 	away_team = game['teams']['away']['team']['abbreviation']
 	home_team = game['teams']['home']['team']['abbreviation']
-	game_type = '' if game['gameType'].lower() == 'r' else '(post-season)'
+	game_type = '' if game['gameType'].lower() == 'r' else '(pre-season)' if game['gameType'].lower() == 'pr' else '(post-searson)'
 	game_number = ''
+	series_status = ''
 	if game_type != '':
-		game_number = game['seriesSummary']['gameLabel']
-		series_status = game['seriesSummary']['seriesStatusShort']
+		try:
+			game_number = game['seriesSummary']['gameLabel']
+			series_status = game['seriesSummary']['seriesStatusShort']
+		except:
+			pass
 	print
 	print "# %s at %s %s %s" % ( away_team, home_team, game_number, game_type )
-	if game_type != '':
+	if game_type != '' and series_status != '':
 		print "### Series: %s" % ( series_status )
 	current_state  = game['status']['codedGameState']
 	if current_state.lower() in ["3","4"]: # in progess
