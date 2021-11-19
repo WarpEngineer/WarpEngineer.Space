@@ -12,7 +12,7 @@ import time
 from datetime import datetime, timedelta
 from tz import UTC, LocalTimezone
 
-VERSION = "version 0.8.2"
+VERSION = "version 0.8.3"
 
 # Date format = YYYY-MM-DD
 URL_NHL = "https://statsapi.web.nhl.com/api/v1/schedule?startDate=%s&endDate=%s&hydrate=team(leaders(categories=[points,goals,assists],gameTypes=[R])),linescore,broadcasts(all),tickets,game(content(media(epg),highlights(scoreboard)),seriesSummary),radioBroadcasts,metadata,decisions,scoringplays,seriesSummary(series)&site=en_nhl&teamId=&gameType=&timecode="
@@ -44,7 +44,7 @@ def format_nhl_game(game):
 	if game_type != '' and series_status != '':
 		print "### Series: %s" % ( series_status )
 	current_state  = game['status']['codedGameState']
-	if current_state.lower() in ["3","4"]: # in progess
+	if current_state in ["3","4"]: # in progess
 		current_period = game['linescore']['currentPeriodOrdinal']
 		current_period_ord = game['linescore']['currentPeriodOrdinal']
 		current_remain = game['linescore']['currentPeriodTimeRemaining']
@@ -56,7 +56,9 @@ def format_nhl_game(game):
 			print "## Period: %s   Time Remaining: %s" % (current_period, current_remain)
 		print "### %s: %s" % ( away_team, away_scrore )
 		print "### %s: %s" % ( home_team, home_scrore )
-	elif current_state.lower() in ["5", "6", "7"]: # final
+	elif current_state in ["9"]: # postponed
+		print '## Postponed'
+	elif current_state in ["5", "6", "7"]: # final
 		away_scrore = game['teams']['away']['score']
 		home_scrore = game['teams']['home']['score']
 		current_period = game['linescore']['currentPeriod']
@@ -68,7 +70,7 @@ def format_nhl_game(game):
 		print "### %s: %s" % ( away_team, away_scrore )
 		print "### %s: %s" % ( home_team, home_scrore )
 		print "### Final %s" % overtime
-	elif current_state.lower() in ["1", "2"]: # preview, scheduled
+	elif current_state in ["1", "2"]: # preview, scheduled
 		start_time = game['gameDate']
 		try:
 			t = datetime.strptime(start_time,"%Y-%m-%dT%H:%M:%SZ")
