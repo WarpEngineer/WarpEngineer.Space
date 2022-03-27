@@ -1,0 +1,13 @@
+0,5,10,15,20,25,30,35,40,45,50,55 * * * * /home/<user>/free_mem.sh > /home/<user>/free_memory.log
+
+# sports today
+1,11,23,35,47 17,18,19,20,21,22,23,0,1,2,3,4,5 * * * /usr/bin/python27 /opt/blizanci/sports/get_latest.py nhl today > /opt/blizanci/public_gemini/sports/nhl/index.gemini
+3,13,25,37,49 17,18,19,20,21,22,23,0,1,2,3,4,5 * * * /usr/bin/python27 /opt/blizanci/sports/get_latest.py mlb today > /opt/blizanci/public_gemini/sports/mlb/index.gemini
+
+# sports yesterday
+5 0,6,12,18 * * * /usr/bin/python27 /opt/blizanci/sports/get_latest.py nhl yesterday > /opt/blizanci/public_gemini/sports/nhl/yesterday.gemini
+6 0,6,12,18 * * * /usr/bin/python27 /opt/blizanci/sports/get_latest.py mlb yesterday > /opt/blizanci/public_gemini/sports/mlb/yesterday.gemini
+
+# sports tomorrow
+7 0,6,12,18 * * * /usr/bin/python27 /opt/blizanci/sports/get_latest.py nhl tomorrow > /opt/blizanci/public_gemini/sports/nhl/tomorrow.gemini
+8 0,6,12,18 * * * /usr/bin/python27 /opt/blizanci/sports/get_latest.py mlb tomorrow > /opt/blizanci/public_gemini/sports/mlb/tomorrow.gemini
