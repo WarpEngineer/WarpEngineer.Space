@@ -1,0 +1,40 @@
+Just so I  don't forget, here are some notes on using the acme.sh script for SSL/TLS certs.
+
+## Install
+
+```
+curl https://get.acme.sh | sh
+```
+
+## Advanced Install
+
+```
+./acme.sh --install \
+          --home ~/myacme \
+          --config-home ~/myacme/data \
+          --cert-home ~/mycerts \
+          --accountemail "[email protected]" \
+          --accountkey ~/myaccount.key \
+          --accountconf ~/myaccount.conf \
+          --useragent "this is my client."
+```
+
+```
+				
+```
+
+Just set the ones you care about.
+
+=> https://www.howtoforge.com/getting-started-with-acmesh-lets-encrypt-client/
+
+## Issue
+
+```
+.acme.sh/acme.sh --issue --standalone -d DOMAIN
+```
+
+## Upgrade
+
+```
+acme.sh --upgrade [--auto-upgrade]
+```

@@ -1,0 +1,5 @@
+I was looking for something like `rsync` that I can use on Windows.  I know that I could install many of the Linux utilities on Windows but I just wanted to see if there was something built-in.  Well...`robocopy`!
+
+`robocopy source_dir z:\backup\dest_dir /MIR`
+
+The `/MIR` mirrors the entire directory tree.  I'm tempted to say that I actually like it just as much as, or maybe more than, `rsync`.

@@ -1,9 +1,0 @@
-# Sync a git Repo with Upstream
-
-Steps to add a remote repo to a local project and sync with it.
-
-* git remote add upstream <git://some.git.url/...> # Add the upstream as a remote
-* git fetch upstream # Fetch the upstream
-* git checkout master # Checkout brach to sync with upstream
-* git merge upstream/master # Sync upstream's master branch locally
-

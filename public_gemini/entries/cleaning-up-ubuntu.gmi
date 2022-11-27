@@ -1,0 +1,5 @@
+# Here are some ways to clean up an Ubuntu installation
+
+1. Clean APT cache<br> `sudo apt clean`
+2. Remove old, unused packages<br> `sudo apt autoremove [--purge]`
+3. Use `baobab` to find large files

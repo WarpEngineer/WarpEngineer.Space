@@ -1,0 +1,56 @@
+```
+                                         +--+
+                                         |  |
+                                         |  |            +--------------------------+
++--------------------------+             |  |            |                          |
+|                          |             |  |            |                          |
+|                          |       +-----+--+-----+      |                          |
+|                          |       |              |      |   Remote Machine (C)     |
+|  Local Machine (A)       |       |              |      |                          |
+|                          |       |              |      |                          |
+|                          |       | Jump Server  |      |                          |
+|                          |       |              |      |                          |
+|                          |       |     (B)      |      |                          |
+|                          |       |              |      |                          |
+|                          |       |              |      |                          |
+|                          |       |              |      |                          |
+|                          |       |              |      +--------------------------+
++--------------------------+       |              |
+                                   +-----+--+-----+
+                                         |  |
+                                         |  |
+                                         |  |
+                                         +--+
+```
+
+## Getting to a server behind a firewall
+
+Machine A can get to Machine B
+
+Machine B can get to Machine C
+
+Machine A **CAN NOT** get to Machine C directly.
+
+Most people will use SSH to connect from Machine A to Machine B, then use SSH again to connect from Machine B to Machine C.
+
+### Another option: ProxyCommand
+
+Add the following to SSH config
+
+```cfg
+Host hostb
+    User myself
+    Hostname machineB
+    	
+Host hostc
+    User myself
+    Hostname machineC
+    Port 22
+    ProxyCommand ssh -q -W %h:%p hostb
+```
+
+With this configuration, SSH can be used to connect directly from Machine A to Machine C.  SSH will automatically direct the connection through Machine B.
+
+```
+	
+```

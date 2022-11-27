@@ -1,0 +1,43 @@
+This is a tweak of 
+=> https://github.com/mislav/dotfiles/blob/master/bin/tmux-vim-select-pane
+which is linked from 
+=> https://github.com/christoomey/vim-tmux-navigator
+as a possible fix for the vim integration.
+
+I couldn't get the original one to work right on tmux 1.8 so I fixed it up.
+
+These go into tmux config file:
+
+```
+bind-key -n C-h run-shell "~/tmux-vim-select-pane -L"
+bind-key -n C-j run-shell "~/tmux-vim-select-pane -D"
+bind-key -n C-k run-shell "~/tmux-vim-select-pane -U"
+bind-key -n C-l run-shell "~/tmux-vim-select-pane -R"
+bind-key -n C-\ run-shell "~/tmux-vim-select-pane -l"
+bind C-l send-keys 'C-l'
+```
+
+The new script is:
+
+```
+#!/bin/bash
+# Like `tmux select-pane`, but sends a `<c-h j="" k="" l="">` keystroke if Vim is
+# running in the current pane, or only one pane exists.
+#set -e
+cmd="$(tmux list-panes -F '#{pane_active} #{pane_tty}' | grep '^1')"
+X=$(ps -o comm= -t $(echo $cmd | cut -f2 -d' ') | grep vim)
+isvim=$?
+pane_count="$(printf %d $(tmux list-panes | wc -l))"
+if [[ ($isvim = 0) || ($pane_count = 1) ]]; then
+#if [ $isvim -eq 0 ]; then
+  direction="$(echo "${1#-}" | tr 'lLDUR' '\\hjkl')"
+  # forward the keystroke to Vim
+  tmux send-keys "C-$direction"
+else
+  tmux select-pane "$@"
+fi
+```
+
+```html
+</c-h>
+```

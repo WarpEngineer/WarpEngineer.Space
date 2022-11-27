@@ -1,0 +1,26 @@
+An easy way to check certificate dates derived from the script from the 
+=> ssl-test-script SSL Test Script Post
+.
+
+```html
+<!-- pagebreak -->
+```
+
+```
+  1 #!/bin/bash
+  2
+  3 # OpenSSL requires a port specification; default to 443.
+  4 SERVER="$1:443"
+  5 SERVER_HOST=$(echo "$SERVER" | cut -d ":" -f 1)
+  6 SERVER_PORT=$(echo "$SERVER" | cut -d ":" -f 2)
+  7 if [[ -z "$SERVER_HOST" || -z "$SERVER_PORT" ]]; then
+  8   echo "Usage: $0 host[:port]"
+  9   echo "    Default Port is 443"
+ 10   echo "Using: $(openssl version)"
+ 11   exit
+ 12 fi
+ 13 SERVER="$SERVER_HOST:$SERVER_PORT"
+ 14 SCLIENT_DUMP=$(echo "" | openssl s_client -connect "$SERVER" 2>&1)
+ 15 echo "$SCLIENT_DUMP" | openssl x509 -noout -dates
+ 16
+```

@@ -1,0 +1,25 @@
+Sometimes you make some changes to your system and you just know that something will break if a certain package gets updated.  You want to keep that certain package from updating until you're ready for it.
+
+In Ubuntu, or any `apt/dpkg` based system, you can tell `apt` to just hold the current package version using `apt-mark hold`.  For example, let's say that if the `xxd` package gets updated, it will break something for some reason.  Tell `apt` not to update it.
+
+```shell
+$ sudo apt-mark hold xxd
+```
+
+When you're ready to start updating it again, tell `apt` that it can update it:
+
+```shell
+$ sudo apt-mark unhold xxd
+```
+
+It's that simple.  If you ever want to check what packages are currently in `hold` status, there are two ways to do it.
+
+```shell
+$ dpkg --get-selections | grep "hold"
+xxd                                             hold
+```
+
+```shell
+$ apt-mark showhold
+xxd
+```
