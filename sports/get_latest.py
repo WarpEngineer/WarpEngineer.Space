@@ -121,7 +121,7 @@ def format_mlb_game(game):
 	elif current_state.lower() in ['s','p']: # scheduled, preview
 		start_time = game['gameDate']
 		try:
-			t = datetime.strptime(start_time,"%Y-%m-%dT%H:%M:%SZ")
+			t = datetime.strptime(start_time[:-6]+'Z',"%Y-%m-%dT%H:%M:%SZ")
 			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=UTC())
 			start_time = t1.astimezone(LocalTimezone()).strftime("%Y-%m-%d %H:%M")
 		except:
