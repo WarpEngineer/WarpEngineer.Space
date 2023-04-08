@@ -123,7 +123,8 @@ def format_mlb_game(game):
 		try:
 			t = datetime.strptime(start_time[:-6]+'Z',"%Y-%m-%dT%H:%M:%SZ")
 			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=UTC())
-			start_time = t1.astimezone(LocalTimezone()).strftime("%Y-%m-%d %H:%M")
+			#start_time = t1.astimezone(LocalTimezone()).strftime("%Y-%m-%d %H:%M")
+			start_time = t1.strftime("%Y-%m-%d %H:%M")
 		except:
 			# just use as is then
 			pass
