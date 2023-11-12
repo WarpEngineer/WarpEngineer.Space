@@ -6,3 +6,4 @@ warpengineer.space.*.tar.gz
 convert_gemtext_file.py
 converted
 *.pyc
+.venv
