@@ -46,15 +46,11 @@ def format_nhl_game(game):
 		print("### Series: %s" % ( series_status ))
 	current_state  = game['gameState'].lower()
 	if current_state in ["live","crit"]: # in progess
-		current_period = game['linescore']['currentPeriodOrdinal']
-		current_period_ord = game['linescore']['currentPeriodOrdinal']
-		current_remain = game['linescore']['currentPeriodTimeRemaining']
-		away_scrore = game['teams']['away']['score']
-		home_scrore = game['teams']['home']['score']
-		if current_remain.lower() == "end":
-			print("## END of %s Period" % current_period_ord)
-		else:
-			print("## Period: %s   Time Remaining: %s" % (current_period, current_remain))
+		current_period = game['periodDescriptor']['number']
+		current_remain = game['clock']['timeRemaining']
+		away_scrore = game['awayTeam']['score']
+		home_scrore = game['homeTeam']['score']
+		print("## Period: %d   Time Remaining: %s" % (current_period, current_remain))
 		print("### %s: %s" % ( away_team, away_scrore ))
 		print("### %s: %s" % ( home_team, home_scrore ))
 	elif current_state == "postponed":
@@ -64,7 +60,7 @@ def format_nhl_game(game):
 		home_scrore = game['homeTeam']['score']
 		current_period = game['periodDescriptor']['number']
 		overtime = ""
-		if int(current_period) > 3:
+		if current_period > 3:
 			overtime = game['periodDescriptor']['periodType']
 		# if game['linescore']['hasShootout']:
 			# overtime = "OT/SO"
