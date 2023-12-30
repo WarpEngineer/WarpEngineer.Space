@@ -55,7 +55,7 @@ def format_nhl_game(game):
 		print("### %s: %s" % ( home_team, home_scrore ))
 	elif current_state == "postponed":
 		print('## Postponed')
-	elif current_state.lower() in ["final","off"]:
+	elif current_state in ["final","off"]:
 		away_scrore = game['awayTeam']['score']
 		home_scrore = game['homeTeam']['score']
 		current_period = game['periodDescriptor']['number']
@@ -67,7 +67,7 @@ def format_nhl_game(game):
 		print("### %s: %s" % ( away_team, away_scrore ))
 		print("### %s: %s" % ( home_team, home_scrore ))
 		print("### Final %s" % overtime)
-	elif current_state == 'fut': # future
+	elif current_state in [ 'fut', 'pre' ]: # future
 		start_time = game['startTimeUTC']
 		try:
 			t = datetime.strptime(start_time,"%Y-%m-%dT%H:%M:%SZ")

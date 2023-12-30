@@ -1,10 +1,7 @@
 An easy way to check certificate dates derived from the script from the 
 => ssl-test-script SSL Test Script Post
-.
 
 ```html
-<!-- pagebreak -->
-```
 
 ```
   1 #!/bin/bash

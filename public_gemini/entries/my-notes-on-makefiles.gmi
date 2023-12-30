@@ -14,21 +14,28 @@
 
 ## Functions
 
-* $(shell ) - Run 'command' in a shell and return output
+*
 
-* $(call var,arg,arg,...) - Call a function, var, with args.
+ $(shell ) - Run 'command' in a shell and return output
+*
 
-call example call example: reverse = $(2) $(1) D = $(call reverse,a,b) # D will contain 'b a'
+ $(call var,arg,arg,...) - Call a function, var, with args.
 
-* $(filter pat,text) - Filter 'text' by 'pat'
+ call example call example: reverse = $(2) $(1) D = $(call reverse,a,b) # D will contain 'b a'
+*
 
-filter example filter example: D = a.h a.c b.h b.c CFiles = $(filter %.c,$(D))  # CFiles will contain 'a.c b.c' only
+ $(filter pat,text) - Filter 'text' by 'pat'
 
-* $(if ,,) - If 'cond' is non-empty string, do 'then'...
+ filter example filter example: D = a.h a.c b.h b.c CFiles = $(filter %.c,$(D))  # CFiles will contain 'a.c b.c' only
+*
 
-* $(or arg,arg,...) - Return first non-empty arg or empty string
+ $(if ,,) - If 'cond' is non-empty string, do 'then'...
+*
 
-* $(and arg,arg,...) - Return empty string or last non-empty arg
+ $(or arg,arg,...) - Return first non-empty arg or empty string
+*
+
+ $(and arg,arg,...) - Return empty string or last non-empty arg
 
 ### List Functions
 

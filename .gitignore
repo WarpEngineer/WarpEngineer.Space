@@ -7,3 +7,4 @@ convert_gemtext_file.py
 converted
 *.pyc
 .venv
+dist

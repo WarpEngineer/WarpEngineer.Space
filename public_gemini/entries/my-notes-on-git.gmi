@@ -1,0 +1,15 @@
+## Stuff I keep forgetting
+
+### Work on a remote branch
+
+1. `git fetch <origin> <remote_branch>`
+2. `git checkout -b <local_branch_name> <origin>/<remote_branch>`
+
+ 1. can also be: `git checkout <remote_branch>`
+
+### Track a remote branch
+
+1. `git checkout -b <local_branch> # if no local created yet`
+2. `git branch -u <origin>/<remote_branch>`
+
+##### Will update this as needed.
