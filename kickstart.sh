@@ -411,13 +411,14 @@ kerl update releases
 kerl build 24.3.4.15
 mkdir otp
 kerl install 24.3.4.15 otp/24.3.4.15
+source ./otp/24.3.4.15/activate
 alert "Press ENTER to continue."
 read -a X
 
 notice "Installing rebar3"
 mkdir -p bin
 curl -O https://s3.amazonaws.com/rebar3/rebar3
-mv rebar3 big/
+mv rebar3 bin/
 chmod +x bin/rebar3
 alert "Press ENTER to continue."
 read -a X
@@ -425,8 +426,13 @@ read -a X
 notice "Installing Blizanci"
 git clone https://github.com/WarpEngineer/blizanci.git
 git clone https://github.com/WarpEngineer/WarpEngineer.Space.git
+# copy configs
 cat WarpEngineer.Space/blizanci.config/sys.config | awk '{gsub(/HOME/,ENVIRON["HOME"]);print}' > blizanci/config/sys.config
 cp WarpEngineer.Space/blizanci.config/vm.args blizanci/config/
+# copy content
+cp -r WarpEngineer.Space/public_gemini/* blizanci/public_gemini/
+# create temporary key/cert
+./WarpEngineer.Space/crt_crt.sh blizanci/ssl/key.key blizanci/ssl/cer.cer
 cd blizanci
 rebar3 release
 cd -
