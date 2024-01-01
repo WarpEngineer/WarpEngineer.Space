@@ -1,19 +1,19 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 ###vim: set encoding=utf-8 :
-from __future__ import print_function
 
 import os
 # set time zone to eastern
-os.putenv("TZ","America/New_York")
+os.environ["TZ"] = "America/New_York"
 
 import sys
-import urllib2
+from urllib.request import build_opener
 import json
 import time
 from datetime import datetime, timedelta
-from tz import UTC, LocalTimezone
+#from tz import UTC, LocalTimezone
+from backports.zoneinfo import ZoneInfo
 
-VERSION = "version 0.9.0"
+VERSION = "version 0.10.0"
 
 # Date format = YYYY-MM-DD
 URL_NHL = "https://api-web.nhle.com/v1/score/%s"
@@ -71,8 +71,10 @@ def format_nhl_game(game):
 		start_time = game['startTimeUTC']
 		try:
 			t = datetime.strptime(start_time,"%Y-%m-%dT%H:%M:%SZ")
-			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=UTC())
-			start_time = t1.astimezone(LocalTimezone()).strftime("%Y-%m-%d %H:%M")
+			# t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=UTC())
+			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=ZoneInfo("UTC"))
+			# start_time = t1.astimezone(LocalTimezone()).strftime("%Y-%m-%d %H:%M")
+			start_time = t1.astimezone(ZoneInfo(os.environ["TZ"])).strftime("%Y-%m-%d %H:%M")
 		except:
 			# just use as is then
 			pass
@@ -119,7 +121,8 @@ def format_mlb_game(game):
 		start_time = game['gameDate']
 		try:
 			t = datetime.strptime(start_time[:-6]+'Z',"%Y-%m-%dT%H:%M:%SZ")
-			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=UTC())
+			# t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=UTC())
+			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=ZoneInfo("UTC"))
 			#start_time = t1.astimezone(LocalTimezone()).strftime("%Y-%m-%d %H:%M")
 			start_time = t1.strftime("%Y-%m-%d %H:%M")
 		except:
@@ -154,7 +157,7 @@ def main():
 		day_links = "=> index.gemini 👈 today\n"
 		day_links += "=> yesterday.gemini 👈 yesterday"
 	try:
-		op = urllib2.build_opener()
+		op = build_opener()
 		op.addheaders = [('User-Agent', 'Mozilla/5.0')]
 		if sport == 'nhl':
 			f = op.open(URL % ( query_date ))
