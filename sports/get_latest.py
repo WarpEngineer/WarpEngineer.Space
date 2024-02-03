@@ -31,7 +31,14 @@ def error(msg=None, sport=""):
 def format_nhl_game(game):
 	away_team = game['awayTeam']['abbrev']
 	home_team = game['homeTeam']['abbrev']
-	game_type = '' if game['gameType'] == 2 else '(pre-season)' if game['gameType'] == 1 else '(post-season)'
+	if game['gameType'] == 1:
+		game_type = '(pre-season)'
+	elif game['gameType'] == 2:
+		game_type = ''
+	elif game['gameType'] == 4:
+		game_type = '(all-star)'
+	else:
+		game_type = '(post-season)'
 	game_number = ''
 	series_status = ''
 	if game_type != '':
