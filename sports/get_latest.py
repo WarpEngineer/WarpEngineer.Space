@@ -1,21 +1,26 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 ###vim: set encoding=utf-8 :
+from __future__ import print_function
 
 import os
 # set time zone to eastern
 os.environ["TZ"] = "America/New_York"
 
 import sys
-from urllib.request import build_opener
+try:
+	from urllib.request import build_opener
+except ImportError: # python 2
+	from urllib2 import build_opener
 import json
 import time
+time.tzset() # pick up TZ set above
 from datetime import datetime, timedelta
-#from tz import UTC, LocalTimezone
-from backports.zoneinfo import ZoneInfo
+from tz import UTC, LocalTimezone
 
-VERSION = "version 0.10.0"
+VERSION = "version 0.11.0"
 
-# Date format = YYYY-MM-DD
+# Date format = YYYY-MM-DD (NFL: YYYYMMDD)
+URL_NFL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=%s"
 URL_NHL = "https://api-web.nhle.com/v1/score/%s"
 URL_MLB = "https://bdfed.stitch.mlbinfra.com/bdfed/transform-mlb-scoreboard?stitch_env=prod&sortTemplate=4&sportId=1&startDate=%s&endDate=%s&gameType=E,S,R,F,D,L,W,A&=,,,,,,,&language=en&leagueId=103,104"
 
@@ -78,10 +83,53 @@ def format_nhl_game(game):
 		start_time = game['startTimeUTC']
 		try:
 			t = datetime.strptime(start_time,"%Y-%m-%dT%H:%M:%SZ")
-			# t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=UTC())
-			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=ZoneInfo("UTC"))
-			# start_time = t1.astimezone(LocalTimezone()).strftime("%Y-%m-%d %H:%M")
-			start_time = t1.astimezone(ZoneInfo(os.environ["TZ"])).strftime("%Y-%m-%d %H:%M")
+			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=UTC())
+			start_time = t1.astimezone(LocalTimezone()).strftime("%Y-%m-%d %H:%M")
+		except:
+			# just use as is then
+			pass
+		print("## Starts at %s" % start_time)
+
+def format_nfl_game(game):
+	comp = game['competitions'][0]
+	teams = {}
+	for c in comp['competitors']:
+		teams[c['homeAway']] = c
+	away_team = teams['away']['team']['abbreviation']
+	home_team = teams['home']['team']['abbreviation']
+	season_type = game['season']['type']
+	game_type = ''
+	game_number = ''
+	if season_type == 1:
+		game_type = '(pre-season)'
+	elif season_type == 3:
+		game_type = '(post-season)'
+	elif 'week' in game:
+		game_number = "week %s" % game['week']['number']
+	print()
+	print("# %s at %s %s %s" % ( away_team, home_team, game_number, game_type ))
+	status = comp['status']
+	current_state = status['type']['name']
+	current_period = status['period']
+	if current_state == 'STATUS_POSTPONED':
+		print('## Postponed')
+	elif current_state in ['STATUS_CANCELED', 'STATUS_SUSPENDED']:
+		print('## %s' % status['type']['description'])
+	elif status['type']['state'] == 'in':
+		print("## %s" % status['type']['detail'])
+		print("### %s: %s" % ( away_team, teams['away']['score'] ))
+		print("### %s: %s" % ( home_team, teams['home']['score'] ))
+	elif status['type']['state'] == 'post':
+		overtime = "/OT" if current_period > 4 else ""
+		print("## Final Score%s" % overtime)
+		print("### %s: %s" % ( away_team, teams['away']['score'] ))
+		print("### %s: %s" % ( home_team, teams['home']['score'] ))
+	else: # pre, scheduled
+		start_time = game['date']
+		try:
+			t = datetime.strptime(start_time,"%Y-%m-%dT%H:%MZ")
+			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,tzinfo=UTC())
+			start_time = t1.astimezone(LocalTimezone()).strftime("%Y-%m-%d %H:%M")
 		except:
 			# just use as is then
 			pass
@@ -128,8 +176,7 @@ def format_mlb_game(game):
 		start_time = game['gameDate']
 		try:
 			t = datetime.strptime(start_time[:-6]+'Z',"%Y-%m-%dT%H:%M:%SZ")
-			# t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=UTC())
-			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=ZoneInfo("UTC"))
+			t1 = datetime(t.year,t.month,t.day,t.hour,t.minute,t.second,tzinfo=UTC())
 			#start_time = t1.astimezone(LocalTimezone()).strftime("%Y-%m-%d %H:%M")
 			start_time = t1.strftime("%Y-%m-%d %H:%M")
 		except:
@@ -139,11 +186,13 @@ def format_mlb_game(game):
 
 def main():
 	# pointers: White Left Pointing Backhand Index Emoji, White Right Pointing Backhand Index Emoji
-	# argv1: nhl|mlb
+	# argv1: nhl|mlb|nfl
 	# argv2: today|yesterday|tomorrow
 	sport = sys.argv[1]
 	if sport == 'nhl':
 		URL = URL_NHL
+	elif sport == 'nfl':
+		URL = URL_NFL
 	else:
 		URL = URL_MLB
 	which_day = sys.argv[2].lower()
@@ -168,6 +217,8 @@ def main():
 		op.addheaders = [('User-Agent', 'Mozilla/5.0')]
 		if sport == 'nhl':
 			f = op.open(URL % ( query_date ))
+		elif sport == 'nfl':
+			f = op.open(URL % ( query_date.replace("-", "") ))
 		else:
 			f = op.open(URL % ( query_date, query_date ))
 	except:
@@ -180,6 +231,8 @@ def main():
 			game_date = data_decoded['dates'][0]['date']
 		elif 'currentDate' in data_decoded:
 			game_date = data_decoded['currentDate']
+		elif sport == 'nfl':
+			game_date = query_date
 		else:
 			game_date = 'this day'
 	except:
@@ -203,6 +256,8 @@ def main():
 			games = data_decoded['dates'][0]['games']
 		elif 'games' in data_decoded:
 			games = data_decoded['games']
+		elif 'events' in data_decoded:
+			games = data_decoded['events']
 		else:
 			games = []
 	except:
@@ -213,6 +268,8 @@ def main():
 			for game in games:
 				if sport == 'nhl':
 					format_nhl_game(game)
+				elif sport == 'nfl':
+					format_nfl_game(game)
 				else:
 					format_mlb_game(game)
 				print()

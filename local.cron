@@ -3,11 +3,14 @@
 # sports today
 1,11,23,35,47 17,18,19,20,21,22,23,0,1,2,3,4,5 * * * /usr/bin/python27 $HOME/blizanci/sports/get_latest.py nhl today > $HOME/blizanci/public_gemini/sports/nhl/index.gemini
 3,13,25,37,49 17,18,19,20,21,22,23,0,1,2,3,4,5 * * * /usr/bin/python27 $HOME/blizanci/sports/get_latest.py mlb today > $HOME/blizanci/public_gemini/sports/mlb/index.gemini
+5,15,27,39,51 17,18,19,20,21,22,23,0,1,2,3,4,5 * * * /usr/bin/python27 $HOME/blizanci/sports/get_latest.py nfl today > $HOME/blizanci/public_gemini/sports/nfl/index.gemini
 
 # sports yesterday
 5 0,6,12,18 * * * /usr/bin/python27 $HOME/blizanci/sports/get_latest.py nhl yesterday > $HOME/blizanci/public_gemini/sports/nhl/yesterday.gemini
 6 0,6,12,18 * * * /usr/bin/python27 $HOME/blizanci/sports/get_latest.py mlb yesterday > $HOME/blizanci/public_gemini/sports/mlb/yesterday.gemini
+9 0,6,12,18 * * * /usr/bin/python27 $HOME/blizanci/sports/get_latest.py nfl yesterday > $HOME/blizanci/public_gemini/sports/nfl/yesterday.gemini
 
 # sports tomorrow
 7 0,6,12,18 * * * /usr/bin/python27 $HOME/blizanci/sports/get_latest.py nhl tomorrow > $HOME/blizanci/public_gemini/sports/nhl/tomorrow.gemini
 8 0,6,12,18 * * * /usr/bin/python27 $HOME/blizanci/sports/get_latest.py mlb tomorrow > $HOME/blizanci/public_gemini/sports/mlb/tomorrow.gemini
+10 0,6,12,18 * * * /usr/bin/python27 $HOME/blizanci/sports/get_latest.py nfl tomorrow > $HOME/blizanci/public_gemini/sports/nfl/tomorrow.gemini
